@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Records</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #686d76;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #31363f;
+            padding: 10px;
+        }
+        .header h1 {
+            text-align: center;
+            color: white;
+            margin: 0;
+        }
+        .back-button {
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+            background-color: #eeeeee;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #d9edbf;
+        }
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #eeeeee;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #31363f;
+            color: white;
+        }
+        span{
+            position: relative;
+            left: 10px;
+        }
+        td {
+            border-bottom: 1px solid #ddd;
+        }
+        .attendance-status.present {
+            color: green;
+            font-weight: bold;
+        }
+        .attendance-status.absent {
+            color: red;
+            font-weight: bold;
+        }
+        .employee-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            vertical-align: middle;
+        }
+        @media (max-width: 600px) {
+            th, td {
+                padding: 10px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Attendance Records</h1>
+        <a href="/dashboard" class="back-button">Back</a>
+    </div>
+    <div class="container">
+        <table id="attendance-table">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Email</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Check-In Time</th>
+                    <th>Check-Out Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic content will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/api/attendance') // Update this URL with the actual endpoint
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('#attendance-table tbody');
+                    
+                    data.forEach(record => {
+                        const row = document.createElement('tr');
+                        
+                        const empCell = document.createElement('td');
+                        const empImage = document.createElement('img');
+                        const empName = document.createElement('span');
+                        
+                        if (record.employeeId) {
+                            empName.textContent = `${record.employeeId.firstName} ${record.employeeId.lastName}`;
+                            empImage.src = record.employeeId.empImage;
+                            empImage.alt = `${record.employeeId.firstName} ${record.employeeId.lastName}`;
+                        } else {
+                            empName.textContent = 'Unknown Employee';
+                            empImage.src = 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?w=826&t=st=1718989339~exp=1718989939~hmac=6ee800a9f0bee9298ec135340492d8c4b0ab4f978688be7bc7262d50ca7ba2cb'; 
+                            empImage.alt = 'Unknown Employee';
+                        }
+                        
+                        empImage.className = 'employee-image';
+                        empCell.appendChild(empImage);
+                        empCell.appendChild(empName);
+                        
+                        const emailCell = document.createElement('td');
+                        emailCell.textContent = record.employeeId ? record.employeeId.email : 'N/A';
+                        
+                        const dateCell = document.createElement('td');
+                        dateCell.textContent = new Date(record.date).toDateString();
+                        
+                        const statusCell = document.createElement('td');
+                        statusCell.innerHTML = `<span class="attendance-status ${record.status.toLowerCase()}">${record.status}</span>`;
+                        
+                        const checkInCell = document.createElement('td');
+                        checkInCell.textContent = record.checkInTime ? record.checkInTime : 'N/A';
+                        
+                        const checkOutCell = document.createElement('td');
+                        checkOutCell.textContent = record.checkOutTime ? record.checkOutTime : 'N/A';
+                        
+                        row.appendChild(empCell);
+                        row.appendChild(emailCell);
+                        row.appendChild(dateCell);
+                        row.appendChild(statusCell);
+                        row.appendChild(checkInCell);
+                        row.appendChild(checkOutCell);
+                        
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching attendance:', error));
+        });
+    </script>
+</body>
+</html>

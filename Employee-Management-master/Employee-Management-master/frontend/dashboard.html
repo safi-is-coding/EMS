@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management Dashboard</title>
+    <style>
+        body {
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        
+        .navbar {
+            width: 100%;
+            height: 10vh;
+            background-color: #31363f;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar .time {
+            color: rgb(222, 219, 219);
+            font-size: 12px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+        
+        .navbar .title {
+            text-align: left;
+            padding-left: 20px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        
+        .navbar .auth-buttons {
+            display: flex;
+            gap: 10px;
+            padding-right: 20px;
+        }
+        
+        .navbar .auth-buttons a {
+            background-color: #eeeeee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: black;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .navbar .auth-buttons a:hover {
+            background-color: #d9edbf;
+        }
+
+        .navbar .auth-buttons button {
+            background-color: #eeeeee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: black;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar .auth-buttons button:hover {
+            background-color: #d9edbf;
+        }
+        
+        .container {
+            display: flex;
+            width: 100%;
+            height: 90vh;
+        }
+        
+        .sidebar {
+            width: 20%;
+            height: 100%;
+            background-color: #adc7ec;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar button {
+            cursor: pointer;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            margin: 10px 0;
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #003647;
+            font-size: 1rem;
+            background-color: #e2ebee;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        
+        .sidebar button:hover {
+            background-color: #004359;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            justify-items: center;
+            gap: 15px;
+            padding: 20px;
+            width: 80%;
+            height: 500px;
+            overflow-y: auto;
+        }
+        
+        .dashboard-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            width: 80%;
+            flex-direction: column;
+            justify-content: center;
+            align-items: left;
+            padding: 20px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .dashboard-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .dashboard-item h2 {
+            margin: 0 0 10px;
+            font-size: 1.5rem;
+            color: white;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+        
+        .dashboard-item p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: rgb(255, 234, 207);
+            font-weight: bold;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        
+        #emp {
+            background-color: #006769;
+            color: white;
+        }
+        
+        #departments {
+            background-color: #40a578;
+            color: white;
+        }
+        
+        #project {
+            background-color: #8E3E63;
+            color: white;
+        }
+        
+        #attendance {
+            background-color: #FFA62F;
+            color: white;
+        }
+        
+        #leaves {
+            background-color: #03AED2;
+            color: white;
+        }
+        
+        #roles {
+            background-color: #c80036;
+            color: white;
+        }
+        
+        @media (max-width: 800px) {
+            .navbar .title {
+                width: 40%;
+                font-size: 13px;
+            }
+            .navbar .time {
+                width: 30%;
+                text-align: center;
+            }
+            .navbar .auth-buttons a {
+                width: 30%;
+                font-size: 0.5rem;
+                padding: 5px 10px;
+            }
+            .sidebar {
+                width: 30%;
+            }
+            .dashboard {
+                width: 70%;
+                height: 100%;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            .dashboard-item {
+                font-size: 16px;
+                width: 80%;
+            }
+            .sidebar button {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .modal-content h2 {
+            margin: 0 0 10px;
+        }
+
+        .modal-content button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #40a578;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-content button:hover {
+            background-color: #358a60;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="title">Employee Management System</div>
+        <div class="time"></div>
+        <div class="auth-buttons">
+            <a href="/user/register">Register</a>
+            <a onclick="logout()">Logout</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="sidebar">
+            <button type="button" onclick="window.location.href='/emp'">Employee List</button>
+            <button type="button" onclick="window.location.href='/departments'">Departments</button>
+            <button type="button" onclick="window.location.href='/projects'">Projects</button>
+            <button type="button" onclick="window.location.href='/attendance'">Attendance</button>
+            <button type="button" onclick="window.location.href='/leaves'">Leaves</button>
+            <button type="button" onclick="window.location.href='/roles'">Roles</button>
+        </div>
+        <div class="dashboard" id="dashboard">
+        </div>
+    </div>
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+            <h2>Logout Successful</h2>
+            <p>You have been logged out successfully.</p>
+            <button onclick="redirectToLogin()">Go to Login</button>
+        </div>
+    </div>
+
+    <script>
+        function updateTime() {
+            const time = document.querySelector('.time');
+            const date = new Date();
+            time.textContent = date.toLocaleTimeString();
+        }
+
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        async function getData() {
+            try {
+                const [employeesResponse, departmentsResponse, projectsResponse, rolesResponse, attendanceResponse, leavesResponse] = await Promise.all([
+                    fetch('/api/employees'),
+                    fetch('/api/departments'),
+                    fetch('/api/projects'),
+                    fetch('/api/roles'),
+                    fetch('/api/attendance'),
+                    fetch('/api/leaves')
+                ]);
+
+                const [employees, departments, projects, roles, attendance, leaves] = await Promise.all([
+                    employeesResponse.json(),
+                    departmentsResponse.json(),
+                    projectsResponse.json(),
+                    rolesResponse.json(),
+                    attendanceResponse.json(),
+                    leavesResponse.json()
+                ]);
+
+                updateDashboard({ employees, departments, projects, roles, attendance, leaves });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        function updateDashboard(data) {
+            const dashboard = document.getElementById('dashboard');
+            const absent = data.attendance.filter(att => att.status === 'Absent').length;
+            const present = data.attendance.filter(att => att.status === 'Present').length;
+            const pendingLeaves = data.leaves.filter(leave => leave.status === 'Pending').length;
+            const approvedLeaves = data.leaves.filter(leave => leave.status === 'Approved').length;
+            const rejectedLeaves = data.leaves.filter(leave => leave.status === 'Rejected').length;
+
+            dashboard.innerHTML = `
+                <div class="dashboard-item" id="emp">
+                    <h2>Employees</h2>
+                    <p>Total: ${data.employees.length}</p>
+                </div>
+                <div class="dashboard-item" id="departments">
+                    <h2>Departments</h2>
+                    <p>Total: ${data.departments.length}</p>
+                </div>
+                <div class="dashboard-item" id="project">
+                    <h2>Projects</h2>
+                    <p>Total: ${data.projects.length}</p>
+                </div>
+                <div class="dashboard-item" id="roles">
+                    <h2>Roles</h2>
+                    <p>Total: ${data.roles.length}</p>
+                </div>
+                <div class="dashboard-item" id="attendance">
+                    <h2>Attendance</h2>
+                    <p>Present: ${present}</p>
+                    <p>Absent: ${absent}</p>
+                </div>
+                <div class="dashboard-item" id="leaves">
+                    <h2>Leaves</h2>
+                    <p>Pending: ${pendingLeaves}</p>
+                    <p>Approved: ${approvedLeaves}</p>
+                    <p>Rejected: ${rejectedLeaves}</p>
+                </div>
+            `;
+        }
+
+        async function logout() {
+            try {
+                const response = await fetch('/api/user/logout', { method: 'POST' });
+                if (response.ok) {
+                    showLogoutModal();
+                } else {
+                    console.error('Logout failed');
+                }
+            } catch (error) {
+                console.error('Error logging out:', error);
+            }
+        }
+
+        function showLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'flex';
+        }
+
+        function redirectToLogin() {
+            window.location.href = '/user/login';
+        }
+
+        getData();
+    </script>
+</body>
+</html>

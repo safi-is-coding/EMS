@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Projects</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #686d76;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #31363f;
+            padding: 10px;
+        }
+        .header h1 {
+            text-align: center;
+            color: white;
+            margin: 0;
+        }
+        .back-button {
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+            background-color: #eeeeee;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #d9edbf;
+        }
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        table {
+            width: 90%;
+            margin: 30px auto ;
+            border-collapse: collapse;
+            background-color: #eeeeee;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #31363f;
+            color: white;
+        }
+        tr:hover {
+            background-color: #d8e2e9;
+        }
+        .manager-info {
+            display: flex;
+            align-items: center;
+        }
+        .manager-info img {
+            border-radius: 50%;
+            margin-right: 15px;
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+        }
+        @media (max-width: 800px) {
+            .container {
+                width: 85%;
+            }
+            th, td {
+                padding: 10px;
+                font-size: 0.8rem;
+            }
+            .manager-info img {
+                width: 20px;
+                height: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Projects</h1>
+        <a href="/dashboard" class="back-button">Back</a>
+    </div>
+    
+        <table>
+            <thead>
+                <tr>
+                    <th>Project Name</th>
+                    <th>Dates</th>
+                    <th>Department</th>
+                    <th>Manager</th>
+                </tr>
+            </thead>
+            <tbody id="projects-table-body"></tbody>
+        </table>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch("/api/projects")
+                .then((response) => response.json())
+                .then((data) => {
+                    const projectsTableBody = document.getElementById("projects-table-body");
+
+                    data.forEach((project) => {
+                        const row = document.createElement("tr");
+
+                        const projectName = document.createElement("td");
+                        projectName.textContent = project.projectName;
+                        row.appendChild(projectName);
+
+                        const projectDates = document.createElement("td");
+                        projectDates.textContent = `Start: ${new Date(project.startDate).toLocaleDateString()} - End: ${new Date(project.endDate).toLocaleDateString()}`;
+                        row.appendChild(projectDates);
+
+                        const departmentInfo = document.createElement("td");
+                        departmentInfo.textContent = `${project.departmentId.departmentName} (${project.departmentId.location})`;
+                        row.appendChild(departmentInfo);
+
+                        const managerInfo = document.createElement("td");
+
+                        if (project.managerId) {
+                            const managerDiv = document.createElement("div");
+                            managerDiv.className = "manager-info";
+
+                            const managerImage = document.createElement("img");
+                            managerImage.src = project.managerId.empImage;
+
+                            const managerDetails = document.createElement("div");
+                            const managerName = document.createElement("p");
+                            managerName.textContent = `${project.managerId.firstName} ${project.managerId.lastName}`;
+
+                            const managerEmail = document.createElement("p");
+                            managerEmail.textContent = project.managerId.email;
+
+                            managerDetails.appendChild(managerName);
+                            managerDetails.appendChild(managerEmail);
+
+                            managerDiv.appendChild(managerImage);
+                            managerDiv.appendChild(managerDetails);
+
+                            managerInfo.appendChild(managerDiv);
+                        } else {
+                            managerInfo.textContent = 'N/A';
+                        }
+
+                        row.appendChild(managerInfo);
+
+                        projectsTableBody.appendChild(row);
+                    });
+                })
+                .catch((error) => console.error("Error fetching projects:", error));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Details</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            height: 100%;
+        }
+
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+
+        .image-container {
+            flex: 0 0 300px;
+            text-align: center;
+            margin-right: 20px;
+            margin-bottom: 20px;
+        }
+
+        .image-container img {
+            position: relative;
+            top: 25%;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .details-container {
+            flex: 1;
+            padding-left: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 28px;
+            
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            font-size: 2rem;
+            color: #007BFF;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: black;
+            background-color: rgba(226, 226, 226, 0.733);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+
+        .buttons{
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 800px) {
+            .container {
+                width: 80%;
+                padding: 50px 20px ;
+            }
+
+            .image-container {
+                flex: 0 0 100%;
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+
+            .image-container img{
+                width: 80%;
+                top: 0;
+            }
+            .details-container {
+                flex: 1;
+                padding-left: 0;
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="image-container" id="image-container"></div>
+        <div class="details-container" id="details-container"></div>
+    </div>
+
+    <script>
+        // Extract employee ID from URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const employeeId = urlParams.get('id');
+
+        // Fetch employee details by ID
+        async function fetchEmployeeDetails() {
+            try {
+                const response = await fetch(`/api/employees/${employeeId}`);
+                const employee = await response.json();
+                return employee;
+            } catch (error) {
+                console.error('Error:', error);
+                return null;
+            }
+        }
+
+        // Render employee details
+        async function renderEmployeeDetails() {
+            const imageContainer = document.getElementById('image-container');
+            const detailsContainer = document.getElementById('details-container');
+        
+            const employee = await fetchEmployeeDetails();
+            if (!employee) {
+                detailsContainer.innerHTML = '<p>Employee details not found.</p>';
+                return;
+            }
+        
+            // Display employee details
+            imageContainer.innerHTML = `<img src="${employee.empImage}" alt="${employee.firstName} ${employee.lastName}">`;
+            detailsContainer.innerHTML = `
+                <h2>${employee.firstName} ${employee.lastName}</h2>
+                <p><b>Email:</b> ${employee.email}</p>
+                <p><b>Phone:</b> ${employee.phone}</p>
+                <p><b>Address:</b> ${employee.address}</p>
+                <p><b>Date of Birth:</b> ${new Date(employee.dateOfBirth).toLocaleDateString()}</p>
+                <p><b>Department:</b> ${employee.departmentId ? employee.departmentId.departmentName : 'N/A'}</p>
+                <p><b>Department Location:</b> ${employee.departmentId ? employee.departmentId.location : 'N/A'}</p>
+                <p><b>Role:</b> ${employee.roleId ? employee.roleId.roleName : 'N/A'}</p>
+                <p><b>Role Description:</b> ${employee.roleId ? employee.roleId.description : 'N/A'}</p>
+                <p><b>Joining Date:</b> ${new Date(employee.createdAt).toLocaleDateString()}</p>
+                <p><b>Last Updated:</b> ${new Date(employee.updatedAt).toLocaleDateString()}</p>
+                <div class="buttons">
+                    <a href="updateEmp.html?id=${employeeId}" class="button">Update Employee</a>
+                    <a href="/emp" class="back-button">Back</a>
+                </div>
+
+            `;
+        }
+
+        // Call renderEmployeeDetails function when the page loads
+        window.addEventListener('load', renderEmployeeDetails);
+    </script>
+</body>
+</html>

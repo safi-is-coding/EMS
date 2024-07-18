@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Employee</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 80%;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        
+        img {
+            height: 30%;
+            width: 30%;
+            box-shadow: 0 0 10px gray;
+            border-radius: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        form {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: rgba(218, 218, 218, 0.785);
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .form-column {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        input[type="file"],
+        input[type="tel"],
+        select,
+        textarea {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            width: 100%;
+        }
+        
+        input[type="file"] {
+            cursor: pointer;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="date"]:focus,
+        input[type="file"]:focus,
+        input[type="tel"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        button[type="submit"] {
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        
+        @media screen and (max-width: 800px) {
+            .container {
+                padding: 20px;
+            }
+        
+            .wrapper {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+        
+            img {
+                height: 150px;
+                width: 150px;
+                margin-bottom: 10px;
+            }
+        
+            form {
+                width: 100%;
+                padding: 15px;
+            }
+        
+            .form-column {
+                width: 100%;
+            }
+        
+            label {
+                margin: 8px 0 5px;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Update Employee</h1>
+        <div class="wrapper">
+            <img id="employee-image" src="" alt="Employee Image">
+            <form id="update-form" enctype="multipart/form-data">
+                <div class="form-column">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName">
+
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName">
+                </div>
+
+                <div class="form-column">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email">
+
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+
+                <div class="form-column">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" id="dob" name="dob">
+
+                    <label for="address">Address</label>
+                    <textarea name="address" id="address"></textarea>
+                </div>
+
+                <div class="form-column">
+                    <label for="departmentId">Department</label>
+                    <select id="departmentId" name="departmentId"></select>
+
+                    <label for="roleId">Role</label>
+                    <select id="roleId" name="roleId"></select>
+
+                    <label for="image">Update Image</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+                
+                <button type="submit">Update Employee</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const employeeId = urlParams.get('id');
+
+            async function getData() {
+                try {
+                    const departmentsResponse = fetch('/api/departments');
+                    const rolesResponse = fetch('/api/roles');
+                    const [departments, roles] = await Promise.all([departmentsResponse, rolesResponse]);
+                    const departmentsData = await departments.json();
+                    const rolesData = await roles.json();
+
+                    const response = await fetch(`/api/employees/${employeeId}`);
+                    const employee = await response.json();
+
+                    if (!response.ok) {
+                        alert('Failed to fetch employee details');
+                        return;
+                    }
+
+                    document.getElementById('employee-image').src = employee.empImage;
+                    document.getElementById('firstName').value = employee.firstName;
+                    document.getElementById('lastName').value = employee.lastName;
+                    document.getElementById('email').value = employee.email;
+                    document.getElementById('phone').value = employee.phone;
+                    document.getElementById('dob').value = employee.dateOfBirth.substr(0, 10);
+                    document.getElementById('address').value = employee.address;
+
+                    const departmentOptions = departmentsData.map(department => {
+                        const selected = department._id === employee.departmentId._id ? 'selected' : '';
+                        return `<option value="${department._id}" ${selected}>${department.departmentName}</option>`;
+                    }).join('');
+                    document.getElementById('departmentId').innerHTML = departmentOptions;
+
+                    const roleOptions = rolesData.map(role => {
+                        const selected = role._id === employee.roleId._id ? 'selected' : '';
+                        return `<option value="${role._id}" ${selected}>${role.roleName}</option>`;
+                    }).join('');
+                    document.getElementById('roleId').innerHTML = roleOptions;
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
+            getData();
+
+            document.getElementById('update-form').addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const formData = new FormData();
+                formData.append('firstName', document.getElementById('firstName').value);
+                formData.append('lastName', document.getElementById('lastName').value);
+                formData.append('email', document.getElementById('email').value);
+                formData.append('phone', document.getElementById('phone').value);
+                formData.append('dob', document.getElementById('dob').value);
+                formData.append('address', document.getElementById('address').value);
+                formData.append('departmentId', document.getElementById('departmentId').value);
+                formData.append('roleId', document.getElementById('roleId').value);
+                const imageFile = document.getElementById('image').files[0];
+                if (imageFile) {
+                    formData.append('image', imageFile);
+                }
+
+                const updateResponse = await fetch(`/api/employees/${employeeId}`, {
+                    method: 'PATCH',
+                    body: formData
+                });
+
+                if (updateResponse.ok) {
+                    alert('Employee updated successfully!');
+                    window.location.href = `/singleEmp.html?id=${employeeId}`;
+                } else {
+                    alert('Failed to update employee.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

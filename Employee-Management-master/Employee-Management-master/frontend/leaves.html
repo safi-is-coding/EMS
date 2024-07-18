@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Records</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #686d76;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #31363f;
+            padding: 10px;
+        }
+        .header h1 {
+            text-align: center;
+            color: white;
+            margin: 0;
+        }
+        .back-button {
+            text-decoration: none;
+            font-weight: bold;
+            color: black;
+            background-color: #eeeeee;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #d9edbf;
+        }
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #eeeeee;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        span{
+            position: relative;
+            top: -20px;
+            left: 10px;
+        }
+        th {
+            background-color: #31363f;
+            color: white;
+        }
+        td {
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            font-size: 0.8rem;
+        }
+        .employee-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            box-shadow: 0 0 3px 1px gray;
+        }
+        .leave-status {
+            font-weight: bold;
+        }
+        .leave-status.pending {
+            color: orange;
+        }
+        .leave-status.approved {
+            color: green;
+        }
+        .leave-status.rejected {
+            color: red;
+        }
+
+        @media (max-width: 800px) {
+            table {
+                width: 100%;
+            }
+            span{
+                top: 10px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Leave Records</h1>
+        <a href="/dashboard" class="back-button">Back</a>
+    </div>
+    <div class="container">
+        <table id="leave-table">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Email</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Leave Type</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="leave-container"></tbody>
+        </table>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/api/leaves') // Update this URL with the actual endpoint
+                .then(response => response.json())
+                .then(data => {
+                    const leaveContainer = document.getElementById('leave-container');
+                    
+                    data.forEach(record => {
+                        const row = document.createElement('tr');
+                        
+                        const empCell = document.createElement('td');
+                        const empImage = document.createElement('img');
+                        const empName = document.createElement('span');
+                        
+                        if (record.employeeId) {
+                            empName.textContent = `${record.employeeId.firstName} ${record.employeeId.lastName}`;
+                            empImage.src = record.employeeId.empImage;
+                            empImage.alt = `${record.employeeId.firstName} ${record.employeeId.lastName}`;
+                        } else {
+                            empName.textContent = 'Unknown Employee';
+                            empImage.src = 'https://img.freepik.com/free-vector/illustration-businessman_53876-5856.jpg?w=740&t=st=1718963985~exp=1718964585~hmac=385a1c81f5b356f1fee105afd15bc392d923c98b23e373ca56a358eac0fe703c'; 
+                            empImage.alt = 'Unknown Employee';
+                        }
+                        
+                        empImage.className = 'employee-image';
+                        empCell.appendChild(empImage);
+                        empCell.appendChild(empName);
+                        
+                        const emailCell = document.createElement('td');
+                        emailCell.textContent = record.employeeId ? record.employeeId.email : 'N/A';
+                        
+                        const startDateCell = document.createElement('td');
+                        startDateCell.textContent = new Date(record.startDate).toDateString();
+                        
+                        const endDateCell = document.createElement('td');
+                        endDateCell.textContent = new Date(record.endDate).toDateString();
+                        
+                        const leaveTypeCell = document.createElement('td');
+                        leaveTypeCell.textContent = record.leaveType;
+                        
+                        const reasonCell = document.createElement('td');
+                        reasonCell.textContent = record.reason;
+                        
+                        const statusCell = document.createElement('td');
+                        statusCell.innerHTML = `<span class="leave-status ${record.status.toLowerCase()}">${record.status}</span>`;
+                        
+                        row.appendChild(empCell);
+                        row.appendChild(emailCell);
+                        row.appendChild(startDateCell);
+                        row.appendChild(endDateCell);
+                        row.appendChild(leaveTypeCell);
+                        row.appendChild(reasonCell);
+                        row.appendChild(statusCell);
+                        
+                        leaveContainer.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching leaves:', error));
+        });
+    </script>
+</body>
+</html>
